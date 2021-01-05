@@ -20,7 +20,7 @@ import (
 )
 
 const bchdTestNode = "bchd.ny1.simpleledger.io:443"
-const logRequestJson = true // log JSON of request and responses (to glog)
+const logRequestJson = false // log JSON of request and responses (to glog)
 
 const dustLimit = 546
 
@@ -127,6 +127,10 @@ func TestRequestInvalid(t *testing.T) {
 	t.Logf("Successfully tested %s - received %+v", method, err)
 }
 
+func TestGetTransaction(t *testing.T) {
+	// TODO
+}
+
 func TestGetAddressUnspentOutputs(t *testing.T) {
 	method := "GetAddressUnspentOutputs"
 	address := "simpleledger:qzapwgc088xj9hf8pcsrzsey8j7svcqysyp9ygxmq8"
@@ -149,6 +153,65 @@ func TestGetAddressUnspentOutputs(t *testing.T) {
 		t.Fatalf("Error unmarshalling %s response: %+v", method, err)
 	} else if len(outputs.Outputs) < 1 {
 		t.Fatalf("%s has no outputs for address %s", method, address)
+	}
+
+	outputMap, err := httpClient.JsonToMap(res)
+	if err != nil {
+		t.Fatalf("Error unmarshalling %s to map %+v", method, err)
+	}
+	validator := NewValidator()
+	err = validator.CheckExpectedResponseFormat(outputMap, D{
+		"outputs": []D{D{
+			"outpoint": D{
+				"hash":  "string",
+				"index": "number",
+			},
+			"pubkey_script": "string",
+			"value":         "string",
+			"is_coinbase":   "bool",
+			"block_height":  "number",
+			"slp_token": D{
+				"token_id":      "string",
+				"amount":        "string",
+				"is_mint_baton": "bool",
+				"address":       "string",
+				"decimals":      "number",
+				"slp_action":    "string",
+				"token_type":    "number",
+			},
+		}},
+		"token_metadata": []D{D{
+			"token_id":   "string",
+			"token_type": 0,
+			"type1": D{
+				"token_ticker":        "string",
+				"token_name":          "string",
+				"token_document_url":  "string",
+				"token_document_hash": "string",
+				"decimals":            0,
+				"mint_baton_txid":     "string",
+				"mint_baton_vout":     0,
+			},
+			"nft1_group": D{
+				"token_ticker":        "string",
+				"token_name":          "string",
+				"token_document_url":  "string",
+				"token_document_hash": "string",
+				"decimals":            0,
+				"mint_baton_txid":     "string",
+				"mint_baton_vout":     0,
+			},
+			"nft1_child": D{
+				"token_ticker":        "string",
+				"token_name":          "string",
+				"token_document_url":  "string",
+				"token_document_hash": "string",
+				"group_id":            "string",
+			},
+		}},
+	})
+	if err != nil {
+		t.Fatalf("%s response property validation failed %+v", method, err)
 	}
 
 	firstOutput := outputs.Outputs[0]

@@ -93,9 +93,13 @@ func (c *HttpClient) RequestMap(method string, body D) (D, error) {
 	if err != nil {
 		return nil, err
 	}
+	return c.JsonToMap(resData)
+}
 
+// Unmarshalls the given JSON into a map.
+func (c HttpClient) JsonToMap(resData []byte) (D, error) {
 	var resJson D
-	err = json.Unmarshal(resData, &resJson)
+	err := json.Unmarshal(resData, &resJson)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("error unmarshalling REST API data %+v", err))
 	}
