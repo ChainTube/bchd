@@ -406,7 +406,6 @@ func TestCheckSlpTransactionBurnAllowed(t *testing.T) {
 			},
 			"token_id":        tokenIDBase64,
 			"token_type":      1,
-			"amount":          "0",
 			"mint_baton_vout": 2,
 		}},
 	})
@@ -500,11 +499,9 @@ func TestGetTrustedSlpValidation(t *testing.T) {
 
 	res, err := httpClient.RequestRaw(method, D{
 		"queries": []D{{
-			"prev_out_hash":            transactionIDBase64,
-			"prev_out_vout":            prevOutVout,
-			"graphsearch_valid_hashes": nil,
+			"prev_out_hash": transactionIDBase64,
+			"prev_out_vout": prevOutVout,
 		}},
-		"include_graphsearch_count": true,
 	})
 
 	if err != nil {
