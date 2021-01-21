@@ -25,5 +25,6 @@ web/bchrpc.swagger.json: ../bchrpc.proto ./bchrpc.yaml
 		--openapiv2_opt logtostderr=true \
 		--openapiv2_opt grpc_api_configuration=./bchrpc.yaml \
 		--openapiv2_opt generate_unbound_methods=true \
+		--openapiv2_opt json_names_for_fields=false \
 		../bchrpc.proto
 
